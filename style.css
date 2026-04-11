@@ -1,19 +1,27 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
 .video-player {
-    flex: 1 1 45%;
-    min-width: 300px;
-    min-height: 200px;
-    aspect-ratio: 16 / 9;
+    /* Sizing is handled by main.js optimizeSize() */
     background: #000;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    margin: 2px;
+    display: block;
     overflow: hidden;
+}
+
+#video-container {
+
+}
+
+#chat-container {
+
 }
 
 .tab-pane, .tab-content {
     height: 100%;
+}
+
+.nav-tabs .nav-link {
+    border-radius: 0;
 }
 
 iframe {
