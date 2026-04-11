@@ -48,10 +48,10 @@ channels.forEach((channel, index) => {
     const isActive = index === 0;
 
     const playerDiv = document.createElement('div');
-    playerDiv.className = 'video-player border border-secondary shadow';
+    playerDiv.className = 'video-player';
     playerDiv.innerHTML = `<iframe 
-        src="https://player.twitch.tv/?muted=true&autoplay=true&channel=${channel}&parent=${host}" 
-        height="100%" width="100%" allow="autoplay; fullscreen" allowfullscreen="true"></iframe>`;
+        src="https://player.twitch.tv/?channel=${channel}&parent=${host}&muted=true" 
+        height="720" width="1280" allowfullscreen></iframe>`;
     videoContainer.appendChild(playerDiv);
 
     const tabItem = document.createElement('li');
