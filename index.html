@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Multi-Viewer</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-dark text-light">
+    <div class="container-fluid vh-100 d-flex flex-column">
+        <header class="py-2">
+            <h1 class="h5 mb-0">Twitch Multi-Viewer</h1>
+            <small class="text-secondary">Usage: ?channel=stream1,stream2</small>
+        </header>
+
+        <div class="row flex-grow-1 overflow-hidden">
+            <!-- Video Streams Area -->
+            <main id="video-container" class="col-md-9 d-flex flex-wrap align-content-start overflow-auto p-2">
+                <!-- Videos will be injected here -->
+            </main>
+
+            <!-- Chat Sidebar Area -->
+            <aside class="col-md-3 d-flex flex-column p-0">
+                <ul class="nav nav-tabs" id="chat-tabs" role="tablist">
+                    <!-- Tabs will be injected here -->
+                </ul>
+                <div class="tab-content flex-grow-1" id="chat-content">
+                    <!-- Chat frames will be injected here -->
+                </div>
+            </aside>
+        </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>

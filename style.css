@@ -1,0 +1,21 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+.video-player {
+    flex: 1 1 45%;
+    min-width: 300px;
+    min-height: 200px;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: hidden;
+}
+
+.tab-pane, .tab-content {
+    height: 100%;
+}
+
+iframe {
+    border: none;
+}
