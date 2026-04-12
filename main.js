@@ -184,3 +184,79 @@ window.addEventListener('resize', () => {
 
 window.optimizeSize();
 setTimeout(window.optimizeSize, 500);
+
+// Manage Channels Modal Logic
+let modalChannels = [];
+
+document.getElementById('manageModal')?.addEventListener('show.bs.modal', () => {
+    modalChannels = [...channels];
+    renderManageList();
+});
+
+function renderManageList() {
+    const list = document.getElementById('manage-channel-list');
+    if (!list) return;
+    list.innerHTML = '';
+    modalChannels.forEach((channel, index) => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item bg-dark text-light d-flex justify-content-between align-items-center draggable-item';
+        li.draggable = true;
+        li.dataset.index = index;
+        li.innerHTML = `
+            <span><i class="fa-solid fa-grip-vertical me-2 text-secondary" style="cursor: move;"></i> ${channel}</span>
+            <button class="btn btn-sm remove-channel-btn" data-index="${index}">
+                <i class="fa-solid fa-trash text-danger"></i>
+            </button>
+        `;
+        
+        li.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', index);
+            li.classList.add('dragging');
+        });
+        li.addEventListener('dragover', (e) => e.preventDefault());
+        li.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const fromIndex = e.dataTransfer.getData('text/plain');
+            const toIndex = index;
+            const movedItem = modalChannels.splice(fromIndex, 1)[0];
+            modalChannels.splice(toIndex, 0, movedItem);
+            renderManageList();
+        });
+        li.addEventListener('dragend', () => li.classList.remove('dragging'));
+        list.appendChild(li);
+    });
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-channel-btn')) {
+        const index = e.target.closest('.remove-channel-btn').dataset.index;
+        modalChannels.splice(index, 1);
+        renderManageList();
+    }
+    if (e.target.id === 'add-channel-btn') {
+        addChannelFromModal();
+    }
+});
+
+document.getElementById('add-channel-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        addChannelFromModal();
+    }
+});
+
+function addChannelFromModal() {
+    const input = document.getElementById('add-channel-input');
+    const val = input.value.trim();
+    if (val) {
+        const newChannels = val.split(/[\s,]+/).filter(Boolean);
+        modalChannels.push(...newChannels);
+        input.value = '';
+        renderManageList();
+    }
+}
+
+document.getElementById('save-channels-btn')?.addEventListener('click', () => {
+    const formatted = modalChannels.join(',');
+    window.location.search = formatted ? '?channel=' + formatted : '';
+});

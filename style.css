@@ -3,7 +3,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: #181821 !important;
-    color: #ddd9e8 !important;
+    color: #fff !important;
 }
 
 .navbar-brand {
@@ -44,13 +44,13 @@ a:focus {
     z-index: 1;
 }
 
-nav.bg-dark, footer.bg-dark {
+nav.bg-dark, footer.bg-dark, .modal .bg-dark {
     background-color: #181821 !important;
 }
 
 .nav-tabs .nav-link.active {
     background-color: #9146ff !important;
-    color: #ddd9e8 !important;
+    color: #fff !important;
 }
 
 .muted {
@@ -61,7 +61,7 @@ nav.bg-dark, footer.bg-dark {
 .btn-purple:hover,
 .btn-purple:focus,
 .btn-purple:active {
-    background-color: #6441a5;
+    background-color: #9146ff;
     border-color: #523c7c;
 }
 
@@ -76,14 +76,14 @@ nav.bg-dark, footer.bg-dark {
     height: 100%;
 }
 
-.nav-tabs {
-    border-bottom: solid 1px black;
-}
-
-.nav-tabs .nav-link {
-    border-radius: 0;
-}
-
 iframe {
     border: none;
+}
+
+.draggable-item {
+    cursor: grab;
+}
+
+.draggable-item.dragging {
+    opacity: 0.5;
 }

@@ -33,6 +33,9 @@
             <a class="navbar-brand" href="/">Twitch Multi-Viewer</a>
             <ul class="navbar-nav ms-auto" id="toggle-chat">
                 <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#manageModal">Manage</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="#" onclick="window.toggle_chat(); return false;">Toggle Chat</a>
                 </li>
             </ul>
@@ -45,7 +48,7 @@
                     <h1 class="display-4 mb-3">Twitch Multi-Viewer</h1>
                     <p class="lead text-secondary mb-4">Enter channel names separated by spaces or commas</p>
                     <div class="input-group mb-3 mx-auto" style="max-width: 600px;">
-                        <input type="text" id="channel-input" class="form-control form-control-lg border" placeholder="shroud theburntpeanut asmongold twitch" autofocus onkeydown="if(event.key==='Enter') window.startViewer()">
+                        <input type="text" id="channel-input" class="form-control form-control-lg" placeholder="shroud theburntpeanut asmongold twitch" autofocus onkeydown="if(event.key==='Enter') window.startViewer()">
                         <button class="btn btn-purple px-4 text-white border" type="button" id="go-button" onclick="window.startViewer()">GO</button>
                     </div>
                 </div>
@@ -61,6 +64,30 @@
                     <!-- Chat frames will be injected here -->
                 </div>
             </aside>
+        </div>
+
+        <!-- Manage Channels Modal -->
+        <div class="modal fade" id="manageModal" tabindex="-1" aria-labelledby="manageModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="manageModalLabel">Manage Channels</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="text" id="add-channel-input" class="form-control" placeholder="Add channel name...">
+                            <button class="btn btn-purple text-white border" type="button" id="add-channel-btn">Add</button>
+                        </div>
+                        <ul id="manage-channel-list" class="list-group">
+                            <!-- Channels will be injected here -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-purple text-white" id="save-channels-btn">Save</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <footer class="bg-dark d-none" id="page-footer">
