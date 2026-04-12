@@ -63,26 +63,35 @@ window.toggle_chat = function () {
 };
 
 window.optimizeSize = function () {
-    let n = channels.length;
+    const n = channels.length;
     if (n === 0) return;
 
-    let parentEl = videoContainer.parentElement;
-    let totalWidth = parentEl.clientWidth;
-    let totalHeight = parentEl.clientHeight;
+    // Reset dimensions to allow the parent container to settle into its actual available space.
+    // This prevents previous fixed widths from influencing the new calculation.
+    videoContainer.style.width = '';
+    videoContainer.style.flex = '1 1 auto';
+
+    const parentEl = videoContainer.parentElement;
+    if (!parentEl) return;
+
+    const totalWidth = parentEl.clientWidth;
+    const totalHeight = parentEl.clientHeight;
+
+    // Measure the actual space occupied by the chat or use the default fallback
+    const chatWidth = chat_hidden ? 0 : (chatContainer.offsetWidth || 340);
+    const availableWidth = totalWidth - chatWidth;
 
     let bestWidth = 0;
     let bestHeight = 0;
     let bestCols = 1;
 
     for (let cols = 1; cols <= n; cols++) {
-        let rows = Math.ceil(n / cols);
-        let chatWidth = chatContainer.offsetWidth || 340;
-        let availableWidth = chat_hidden ? totalWidth : totalWidth - chatWidth;
-        let maxWidth = (availableWidth / cols) - 10;
-        let maxHeight = (totalHeight / rows) - 10;
+        const rows = Math.ceil(n / cols);
+        const maxWidth = (availableWidth / cols) - 10;
+        const maxHeight = (totalHeight / rows) - 10;
 
         let w, h;
-        if (maxWidth * 9 / 16 < maxHeight) {
+        if (maxWidth * 9 / 16 <= maxHeight) {
             w = maxWidth;
             h = maxWidth * 9 / 16;
         } else {
@@ -97,18 +106,17 @@ window.optimizeSize = function () {
         }
     }
 
-    let finalW = Math.floor(bestWidth);
-    let finalH = Math.floor(bestHeight);
-    let containerWidth = (finalW + 10) * bestCols;
+    const finalW = Math.floor(bestWidth);
+    const finalH = Math.floor(bestHeight);
+    const containerWidth = (finalW + 10) * bestCols;
 
     videoContainer.style.width = containerWidth + "px";
     videoContainer.style.flex = "0 0 " + containerWidth + "px";
 
-    let players = document.querySelectorAll('.video-player');
-    for (let i = 0; i < players.length; i++) {
-        players[i].style.width = finalW + "px";
-        players[i].style.height = finalH + "px";
-    }
+    document.querySelectorAll('.video-player').forEach(player => {
+        player.style.width = finalW + "px";
+        player.style.height = finalH + "px";
+    });
 };
 
 window.startViewer = function () {
