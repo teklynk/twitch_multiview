@@ -22,17 +22,35 @@ let chatContainer = document.getElementById('chat-container');
 let channelInput = document.getElementById('channel-input');
 let topNav = document.getElementById('top-nav');
 let pageFooter = document.getElementById('page-footer');
-let chat_hidden = false;
+let chat_hidden = localStorage.getItem('chat_hidden') === 'true';
+
+// Load chat only when requested and visible
+const loadChat = (channel) => {
+    if (chat_hidden) return;
+    const pane = document.getElementById(`chat-pane-${channel}`);
+    if (pane && !pane.innerHTML) pane.innerHTML = chat_object(channel);
+};
 
 function hide_chat() {
     chat_hidden = true;
+    localStorage.setItem('chat_hidden', 'true');
     chatContainer.classList.add('d-none');
+    // Remove all chat iframes to save resources when hidden
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.innerHTML = '';
+    });
     window.optimizeSize();
 }
 
 function show_chat() {
     chat_hidden = false;
+    localStorage.setItem('chat_hidden', 'false');
     chatContainer.classList.remove('d-none');
+    // Reload the chat for the currently active tab
+    const activeTab = chatTabs.querySelector('.nav-link.active');
+    if (activeTab) {
+        loadChat(activeTab.id.replace('tab-', ''));
+    }
     window.optimizeSize();
 }
 
@@ -107,11 +125,10 @@ if (channels.length === 0) {
     pageFooter.classList.remove('d-none');
     topNav.classList.add('d-none');
 } else {
-    // Load chat only when requested
-    const loadChat = (channel) => {
-        const pane = document.getElementById(`chat-pane-${channel}`);
-        if (pane && !pane.innerHTML) pane.innerHTML = chat_object(channel);
-    };
+    // Apply initial visibility preference
+    if (chat_hidden) {
+        chatContainer.classList.add('d-none');
+    }
 
     for (let i = 0; i < channels.length; i++) {
         let channel = channels[i];
