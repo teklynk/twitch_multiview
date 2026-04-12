@@ -7,15 +7,24 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="container-fluid vh-100 d-flex flex-column">
-        <div class="d-flex flex-row flex-grow-1 overflow-hidden">
+    <div class="container-fluid vh-100 d-flex flex-column p-0">
+        <nav class="navbar navbar-expand navbar-dark bg-dark p-0 px-3" id="top-nav">
+            <a class="navbar-brand" href="/">Twitch Multi-Viewer</a>
+            <ul class="navbar-nav ms-auto" id="toggle-chat">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="window.toggle_chat(); return false;">Toggle Chat</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="d-flex flex-row flex-grow-1 overflow-hidden justify-content-center">
             <!-- Video Streams Area -->
             <main id="video-container" class="flex-grow-1 d-flex flex-wrap align-content-center justify-content-center overflow-hidden p-0 m-0">
                 <div id="setup-container" class="d-none text-center p-4 w-100">
                     <h1 class="display-4 mb-3">Twitch Multi-Viewer</h1>
                     <p class="lead text-secondary mb-4">Enter channel names separated by spaces or commas</p>
                     <div class="input-group mb-3 mx-auto" style="max-width: 600px;">
-                        <input type="text" id="channel-input" class="form-control form-control-lg" placeholder="shroud theburntpeanut asmongold twitch" autofocus onkeydown="if(event.key==='Enter') window.startViewer()">
+                        <input type="text" id="channel-input" class="form-control form-control-lg border" placeholder="shroud theburntpeanut asmongold twitch" autofocus onkeydown="if(event.key==='Enter') window.startViewer()">
                         <button class="btn btn-purple px-4 text-white border" type="button" id="go-button" onclick="window.startViewer()">GO</button>
                     </div>
                 </div>
@@ -32,6 +41,12 @@
                 </div>
             </aside>
         </div>
+
+        <footer class="bg-dark d-none" id="page-footer">
+            <div class="container-fluid text-center py-2">
+                <small class="muted">Made with <i class="fa-solid fa-heart"></i> by <a href="https://github.com/teklynk/twitch_multiview" target="_blank">Teklynk</a></small>
+            </div>
+        </footer>
     </div>
     <script type="module" src="/main.js"></script>
 </body>

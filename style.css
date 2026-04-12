@@ -6,13 +6,29 @@ body {
     color: #ddd9e8 !important;
 }
 
+.navbar-brand {
+    font-size: .875em !important;
+}
+
 .nav-link {
+    font-size: .875em !important;
     text-decoration: none !important;
     color: #8c8dff !important;
 }
 
 .nav-link:hover,
 .nav-link:focus {
+    text-decoration: underline !important;
+    color: #a0a1ff !important;
+}
+
+a {
+    text-decoration: none !important;
+    color: #8c8dff !important;
+}
+
+a:hover,
+a:focus {
     text-decoration: underline !important;
     color: #a0a1ff !important;
 }
@@ -28,9 +44,17 @@ body {
     z-index: 1;
 }
 
+nav.bg-dark, footer.bg-dark {
+    background-color: #181821 !important;
+}
+
 .nav-tabs .nav-link.active {
     background-color: #9146ff !important;
     color: #ddd9e8 !important;
+}
+
+.muted {
+    color: #606085 !important;
 }
 
 .btn-purple,
