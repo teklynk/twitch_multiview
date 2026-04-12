@@ -1,0 +1,26 @@
+{
+  "name": "Twitch Multi-Viewer",
+  "short_name": "MultiView",
+  "description": "Watch multiple Twitch streams simultaneously in a dynamic grid layout.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#181821",
+  "theme_color": "#9146ff",
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ]
+}
