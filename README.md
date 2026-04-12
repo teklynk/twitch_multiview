@@ -7,6 +7,8 @@ A lightweight web application that allows you to watch multiple Twitch streams s
 - **Dynamic Grid**: Automatically scales and repositions video streams to fill the available screen space.
 - **Tabbed Chat**: Switch between channel chats easily using a sidebar interface.
 
+![screenshot](https://github.com/teklynk/twitch_multiview/blob/main/Screenshot%20from%202026-04-12%2019-23-12.jpg?raw=true)
+
 ## How to Use
 
 ### Getting Started
