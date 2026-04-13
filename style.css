@@ -44,8 +44,12 @@ a:focus {
     z-index: 1;
 }
 
-nav.bg-dark, footer.bg-dark, .modal .bg-dark {
+nav.bg-dark, footer.bg-dark {
     background-color: #181821 !important;
+}
+
+.modal .bg-dark {
+    background-color: #292938 !important;
 }
 
 .nav-tabs .nav-link.active {
