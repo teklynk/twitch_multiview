@@ -6,51 +6,55 @@ const channelsParam = params.get('channel');
 const channels = channelsParam ? channelsParam.split(',').map(s => s.trim()).filter(Boolean) : [];
 const host = window.location.hostname;
 
-function stream_object(name) {
+const getStreamHtml = (name) => {
     return `<iframe id="embed_${name}" src="https://player.twitch.tv/?muted=true&channel=${name}&parent=${host}" class="stream" allowfullscreen="true" width="100%" height="100%"></iframe>`;
-}
+};
 
-function chat_object(name) {
+const getChatHtml = (name) => {
     return `<iframe frameborder="0" scrolling="no" id="chat-${name}-embed" src="https://twitch.tv/embed/${name}/chat?parent=${host}&darkpopout" height="100%" width="100%"></iframe>`;
-}
+};
 
 const videoContainer = document.getElementById('video-container');
 const chatTabs = document.getElementById('chat-tabs');
 const chatContent = document.getElementById('chat-content');
 const mainNav = document.getElementById('main-nav');
-let setupContainer = document.getElementById('setup-container');
-let chatContainer = document.getElementById('chat-container');
-let channelInput = document.getElementById('channel-input');
-let topNav = document.getElementById('top-nav');
-let navTools = document.getElementById('nav-tools');
-let pageFooter = document.getElementById('page-footer');
-let chat_hidden = localStorage.getItem('chat_hidden') === 'true';
+const setupContainer = document.getElementById('setup-container');
+const chatContainer = document.getElementById('chat-container');
+const channelInput = document.getElementById('channel-input');
+const topNav = document.getElementById('top-nav');
+const navTools = document.getElementById('nav-tools');
+const pageFooter = document.getElementById('page-footer');
+let isChatHidden = localStorage.getItem('chat_hidden') === 'true';
 
 // Load navigation links from API
-fetch("https://twitchapi.teklynk.com/getnav.php")
-    .then(response => response.json())
-    .then(nav_json => {
-        if (mainNav) {
-            Object.values(nav_json).forEach(val => {
+const loadNavigation = async () => {
+    try {
+        const response = await fetch("https://twitchapi.teklynk.com/getnav.php");
+        const navData = await response.json();
+        if (mainNav && navData) {
+            Object.values(navData).forEach(item => {
                 const link = document.createElement('a');
                 link.className = 'dropdown-item';
-                link.href = val.url;
-                link.textContent = val.name;
+                link.href = item.url;
+                link.textContent = item.name;
                 mainNav.appendChild(link);
             });
         }
-    })
-    .catch(error => console.error('Error loading navigation:', error));
+    } catch (error) {
+        console.error('Error loading navigation:', error);
+    }
+};
+loadNavigation();
 
 // Load chat only when requested and visible
 const loadChat = (channel) => {
-    if (chat_hidden) return;
+    if (isChatHidden) return;
     const pane = document.getElementById(`chat-pane-${channel}`);
-    if (pane && !pane.innerHTML) pane.innerHTML = chat_object(channel);
+    if (pane && !pane.innerHTML) pane.innerHTML = getChatHtml(channel);
 };
 
-function hide_chat() {
-    chat_hidden = true;
+const hideChat = () => {
+    isChatHidden = true;
     localStorage.setItem('chat_hidden', 'true');
     chatContainer.classList.add('d-none');
     // Remove all chat iframes to save resources when hidden
@@ -58,10 +62,10 @@ function hide_chat() {
         pane.innerHTML = '';
     });
     window.optimizeSize();
-}
+};
 
-function show_chat() {
-    chat_hidden = false;
+const showChat = () => {
+    isChatHidden = false;
     localStorage.setItem('chat_hidden', 'false');
     chatContainer.classList.remove('d-none');
     // Reload the chat for the currently active tab
@@ -70,43 +74,40 @@ function show_chat() {
         loadChat(activeTab.id.replace('tab-', ''));
     }
     window.optimizeSize();
-}
+};
 
-window.toggle_chat = function () {
-    if (chat_hidden) {
-        show_chat();
+window.toggle_chat = () => {
+    if (isChatHidden) {
+        showChat();
     } else {
-        hide_chat();
+        hideChat();
     }
 };
 
-window.optimizeSize = function () {
-    const n = channels.length;
-    if (n === 0) return;
+window.optimizeSize = () => {
+    const channelCount = channels.length;
+    if (channelCount === 0) return;
 
-    // Reset dimensions to allow the parent container to settle into its actual available space.
-    // This prevents previous fixed widths from influencing the new calculation.
     videoContainer.style.width = '';
     videoContainer.style.flex = '1 1 auto';
 
     const parentEl = videoContainer.parentElement;
     if (!parentEl) return;
 
-    const totalWidth = parentEl.clientWidth;
-    const totalHeight = parentEl.clientHeight;
+    const containerW = parentEl.clientWidth;
+    const containerH = parentEl.clientHeight;
 
-    // Measure the actual space occupied by the chat or use the default fallback
-    const chatWidth = chat_hidden ? 0 : (chatContainer.offsetWidth || 340);
-    const availableWidth = totalWidth - chatWidth;
+    const chatWidth = isChatHidden ? 0 : (chatContainer.offsetWidth || 340);
+    const availableWidth = containerW - chatWidth;
 
     let bestWidth = 0;
     let bestHeight = 0;
     let bestCols = 1;
 
-    for (let cols = 1; cols <= n; cols++) {
-        const rows = Math.ceil(n / cols);
+    for (let cols = 1; cols <= channelCount; cols++) {
+        const rows = Math.ceil(channelCount / cols);
         const maxWidth = (availableWidth / cols) - 10;
-        const maxHeight = (totalHeight / rows) - 10;
+        const maxHeight = (containerH / rows) - 10;
 
         let w, h;
         if (maxWidth * 9 / 16 <= maxHeight) {
@@ -126,10 +127,10 @@ window.optimizeSize = function () {
 
     const finalW = Math.floor(bestWidth);
     const finalH = Math.floor(bestHeight);
-    const containerWidth = (finalW + 10) * bestCols;
+    const finalContainerWidth = (finalW + 10) * bestCols;
 
-    videoContainer.style.width = containerWidth + "px";
-    videoContainer.style.flex = "0 0 " + containerWidth + "px";
+    videoContainer.style.width = finalContainerWidth + "px";
+    videoContainer.style.flex = "0 0 " + finalContainerWidth + "px";
 
     document.querySelectorAll('.video-player').forEach(player => {
         player.style.width = finalW + "px";
@@ -137,10 +138,10 @@ window.optimizeSize = function () {
     });
 };
 
-window.startViewer = function () {
-    let value = channelInput.value.trim();
+window.startViewer = () => {
+    const value = channelInput.value.trim();
     if (value) {
-        let formatted = value.split(/[\s,]+/).filter(Boolean).join(',');
+        const formatted = value.split(/[\s,]+/).filter(Boolean).join(',');
         window.location.search = '?channel=' + formatted;
     }
 };
@@ -153,28 +154,28 @@ if (channels.length === 0) {
     navTools.classList.remove('d-none');
 } else {
     // Apply initial visibility preference
-    if (chat_hidden) {
+    if (isChatHidden) {
         chatContainer.classList.add('d-none');
     }
 
     for (let i = 0; i < channels.length; i++) {
-        let channel = channels[i];
-        let isActive = (i === 0);
+        const channel = channels[i];
+        const isActive = (i === 0);
 
-        let playerDiv = document.createElement('div');
+        const playerDiv = document.createElement('div');
         playerDiv.id = 'player-' + channel;
         playerDiv.className = 'video-player m-1 ' + (isActive ? 'active-stream' : '');
-        playerDiv.innerHTML = stream_object(channel);
+        playerDiv.innerHTML = getStreamHtml(channel);
         videoContainer.appendChild(playerDiv);
 
-        let tabItem = document.createElement('li');
+        const tabItem = document.createElement('li');
         tabItem.className = 'nav-item';
         tabItem.innerHTML = `<button class="nav-link ${isActive ? 'active' : ''}" 
             id="tab-${channel}" data-bs-toggle="tab" data-bs-target="#chat-pane-${channel}" 
             type="button">${channel}</button>`;
         chatTabs.appendChild(tabItem);
 
-        let pane = document.createElement('div');
+        const pane = document.createElement('div');
         pane.className = 'tab-pane' + (isActive ? ' show active' : '');
         pane.id = 'chat-pane-' + channel;
         chatContent.appendChild(pane);
@@ -183,14 +184,14 @@ if (channels.length === 0) {
         if (isActive) loadChat(channel);
     }
 
-    chatTabs.addEventListener('shown.bs.tab', function (event) {
+    chatTabs.addEventListener('shown.bs.tab', (event) => {
         const activeChannel = event.target.id.replace('tab-', '');
         
         // Lazy load the chat iframe only when the tab is clicked
         loadChat(activeChannel);
 
         document.querySelectorAll('.video-player').forEach(p => p.classList.remove('active-stream'));
-        let activePlayer = document.getElementById('player-' + activeChannel);
+        const activePlayer = document.getElementById('player-' + activeChannel);
         if (activePlayer) activePlayer.classList.add('active-stream');
     });
 }

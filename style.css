@@ -1,8 +1,17 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
+:root {
+    --bg-main: #181821;
+    --bg-secondary: #292938;
+    --twitch-purple: #9146ff;
+    --link-color: #8c8dff;
+    --link-hover: #a0a1ff;
+    --muted-text: #606085;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    background-color: #181821 !important;
+    background-color: var(--bg-main) !important;
     color: #fff !important;
 }
 
@@ -10,32 +19,24 @@ body {
     font-size: .875em !important;
 }
 
-.nav-link {
-    font-size: .875em !important;
+.nav-link,
+footer a {
     text-decoration: none !important;
-    color: #8c8dff !important;
+    color: var(--link-color) !important;
+
+    &:hover,
+    &:focus {
+        text-decoration: underline !important;
+        color: var(--link-hover) !important;
+    }
 }
 
-.nav-link:hover,
-.nav-link:focus {
-    text-decoration: underline !important;
-    color: #a0a1ff !important;
+.nav-link {
+    font-size: .875em !important;
 }
 
 .nav-item .nav-link {
-    text-decoration: none !important;
     color: #fff !important;
-}
-
-footer a {
-    text-decoration: none !important;
-    color: #8c8dff !important;
-}
-
-footer a:hover,
-footer a:focus {
-    text-decoration: underline !important;
-    color: #a0a1ff !important;
 }
 
 .video-player {
@@ -44,40 +45,45 @@ footer a:focus {
 }
 
 .active-stream {
-    outline: 4px solid #9146ff !important;
+    outline: 4px solid var(--twitch-purple) !important;
     outline-offset: -4px;
     z-index: 1;
 }
 
-nav.bg-dark, footer.bg-dark {
-    background-color: #181821 !important;
+nav.bg-dark,
+footer.bg-dark {
+    background-color: var(--bg-main) !important;
 }
 
-.modal .bg-dark {
-    background-color: #292938 !important;
+.modal {
+    .bg-dark {
+        background-color: var(--bg-secondary) !important;
+    }
 }
 
-.nav-tabs .nav-link.active {
-    background-color: #9146ff !important;
-    color: #fff !important;
+.nav-tabs {
+    .nav-link.active {
+        background-color: var(--twitch-purple) !important;
+        color: #fff !important;
+    }
 }
 
 .muted {
-    color: #606085 !important;
+    color: var(--muted-text) !important;
 }
 
 .btn-purple,
 .btn-purple:hover,
 .btn-purple:focus,
 .btn-purple:active {
-    background-color: #9146ff;
+    background-color: var(--twitch-purple);
     border-color: #523c7c;
 }
 
 #chat-container {
     min-width: 340px;
     flex-grow: 1;
-    background-color: #292938 !important;
+    background-color: var(--bg-secondary) !important;
 }
 
 .tab-pane,
@@ -91,8 +97,8 @@ iframe {
 
 .draggable-item {
     cursor: grab;
-}
 
-.draggable-item.dragging {
-    opacity: 0.5;
+    &.dragging {
+        opacity: 0.5;
+    }
 }
