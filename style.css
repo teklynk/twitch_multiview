@@ -22,13 +22,18 @@ body {
     color: #a0a1ff !important;
 }
 
-a {
+.nav-item .nav-link {
+    text-decoration: none !important;
+    color: #fff !important;
+}
+
+footer a {
     text-decoration: none !important;
     color: #8c8dff !important;
 }
 
-a:hover,
-a:focus {
+footer a:hover,
+footer a:focus {
     text-decoration: underline !important;
     color: #a0a1ff !important;
 }

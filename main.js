@@ -17,12 +17,30 @@ function chat_object(name) {
 const videoContainer = document.getElementById('video-container');
 const chatTabs = document.getElementById('chat-tabs');
 const chatContent = document.getElementById('chat-content');
+const mainNav = document.getElementById('main-nav');
 let setupContainer = document.getElementById('setup-container');
 let chatContainer = document.getElementById('chat-container');
 let channelInput = document.getElementById('channel-input');
 let topNav = document.getElementById('top-nav');
+let navTools = document.getElementById('nav-tools');
 let pageFooter = document.getElementById('page-footer');
 let chat_hidden = localStorage.getItem('chat_hidden') === 'true';
+
+// Load navigation links from API
+fetch("https://twitchapi.teklynk.com/getnav.php")
+    .then(response => response.json())
+    .then(nav_json => {
+        if (mainNav) {
+            Object.values(nav_json).forEach(val => {
+                const link = document.createElement('a');
+                link.className = 'dropdown-item';
+                link.href = val.url;
+                link.textContent = val.name;
+                mainNav.appendChild(link);
+            });
+        }
+    })
+    .catch(error => console.error('Error loading navigation:', error));
 
 // Load chat only when requested and visible
 const loadChat = (channel) => {
@@ -132,6 +150,7 @@ if (channels.length === 0) {
     setupContainer.classList.remove('d-none');
     pageFooter.classList.remove('d-none');
     topNav.classList.add('d-none');
+    navTools.classList.remove('d-none');
 } else {
     // Apply initial visibility preference
     if (chat_hidden) {
