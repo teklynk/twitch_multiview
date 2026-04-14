@@ -6,6 +6,11 @@ const channelsParam = params.get('channel');
 const channels = channelsParam ? channelsParam.split(',').map(s => s.trim()).filter(Boolean) : [];
 const host = window.location.hostname;
 
+window.openTwitchLoginPopup = () => {
+    const popupWindow = window.open('', 'twitch-login', 'width=400,height=400');
+    popupWindow.location.href = 'https://www.twitch.tv/login?popup=true';
+};
+
 const getStreamHtml = (name) => {
     return `<iframe id="embed_${name}" src="https://player.twitch.tv/?muted=true&channel=${name}&parent=${host}" class="stream" allowfullscreen="true" width="100%" height="100%"></iframe>`;
 };
@@ -186,7 +191,7 @@ if (channels.length === 0) {
 
     chatTabs.addEventListener('shown.bs.tab', (event) => {
         const activeChannel = event.target.id.replace('tab-', '');
-        
+
         // Lazy load the chat iframe only when the tab is clicked
         loadChat(activeChannel);
 
@@ -228,7 +233,7 @@ function renderManageList() {
                 <i class="fa-solid fa-trash text-danger"></i>
             </button>
         `;
-        
+
         li.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', index);
             li.classList.add('dragging');
