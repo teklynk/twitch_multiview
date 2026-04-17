@@ -3,7 +3,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const params = new URLSearchParams(window.location.search);
 const channelsParam = params.get('channel');
-const channels = channelsParam ? channelsParam.split(',').map(s => s.trim()).filter(Boolean) : [];
+const channels = channelsParam ? [...new Set(channelsParam.split(',').map(s => s.trim().toLowerCase()).filter(Boolean))] : [];
 const host = window.location.hostname;
 
 window.openTwitchLoginPopup = () => {
@@ -146,7 +146,7 @@ window.optimizeSize = () => {
 window.startViewer = () => {
     const value = channelInput.value.trim();
     if (value) {
-        const formatted = value.split(/[\s,]+/).filter(Boolean).join(',');
+        const formatted = [...new Set(value.split(/[\s,]+/).map(s => s.toLowerCase()).filter(Boolean))].join(',');
         window.location.search = '?channel=' + formatted;
     }
 };
@@ -274,8 +274,8 @@ function addChannelFromModal() {
     const input = document.getElementById('add-channel-input');
     const val = input.value.trim();
     if (val) {
-        const newChannels = val.split(/[\s,]+/).filter(Boolean);
-        modalChannels.push(...newChannels);
+        const newChannels = val.split(/[\s,]+/).map(s => s.toLowerCase()).filter(Boolean);
+        modalChannels = [...new Set([...modalChannels, ...newChannels])];
         input.value = '';
         renderManageList();
     }
