@@ -23,6 +23,14 @@ button:not(:disabled) {
     font-weight: 600;
 }
 
+.border-radius-20 {
+    border-radius: 20px !important;
+}
+
+.border {
+    border: 1px solid #fff !important;
+}
+
 .navbar-brand {
     font-size: .875em !important;
 }
