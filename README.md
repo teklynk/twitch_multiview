@@ -19,6 +19,7 @@ A lightweight web application that allows you to watch multiple Twitch streams s
 ### URL Shortcuts
 You can also load streams directly by adding them to the URL:
 `https://your-domain.com/?channel=channel1,channel2,channel3`
+`https://your-domain.com/?channel=channel1,channel2&hideChat=true`
 
 ## Local Development
 

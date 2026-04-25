@@ -29,7 +29,7 @@ const channelInput = document.getElementById('channel-input');
 const topNav = document.getElementById('top-nav');
 const navTools = document.getElementById('nav-tools');
 const pageFooter = document.getElementById('page-footer');
-let isChatHidden = localStorage.getItem('chat_hidden') === 'true';
+let isChatHidden = params.get('hideChat') === 'true';
 
 // Load navigation links from API
 const loadNavigation = async () => {
@@ -60,24 +60,43 @@ const loadChat = (channel) => {
 
 const hideChat = () => {
     isChatHidden = true;
-    localStorage.setItem('chat_hidden', 'true');
     chatContainer.classList.add('d-none');
     // Remove all chat iframes to save resources when hidden
     document.querySelectorAll('.tab-pane').forEach(pane => {
         pane.innerHTML = '';
     });
+    // Remove purple border from active stream when chat is hidden
+    document.querySelectorAll('.video-player').forEach(player => {
+        player.classList.remove('active-stream');
+    });
+
+    // Update URL to include hideChat
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.set('hideChat', 'true');
+    window.history.replaceState(null, '', '?' + newParams.toString());
+
     window.optimizeSize();
 };
 
 const showChat = () => {
     isChatHidden = false;
-    localStorage.setItem('chat_hidden', 'false');
     chatContainer.classList.remove('d-none');
     // Reload the chat for the currently active tab
     const activeTab = chatTabs.querySelector('.nav-link.active');
     if (activeTab) {
-        loadChat(activeTab.id.replace('tab-', ''));
+        const channel = activeTab.id.replace('tab-', '');
+        loadChat(channel);
+        // Restore purple border for the active channel
+        const player = document.getElementById('player-' + channel);
+        if (player) player.classList.add('active-stream');
     }
+
+    // Update URL to remove hideChat
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.delete('hideChat');
+    const newSearch = newParams.toString();
+    window.history.replaceState(null, '', newSearch ? '?' + newSearch : window.location.pathname);
+
     window.optimizeSize();
 };
 
@@ -145,9 +164,14 @@ window.optimizeSize = () => {
 
 window.startViewer = () => {
     const value = channelInput.value.trim();
+    const hideChatCheckbox = document.getElementById('hide-chat-checkbox');
     if (value) {
+        const isChecked = !!(hideChatCheckbox && hideChatCheckbox.checked);
         const formatted = [...new Set(value.split(/[\s,]+/).map(s => s.toLowerCase()).filter(Boolean))].join(',');
-        window.location.search = '?channel=' + formatted;
+        
+        let url = '?channel=' + formatted;
+        if (isChecked) url += '&hideChat=true';
+        window.location.search = url;
     }
 };
 
@@ -157,6 +181,12 @@ if (channels.length === 0) {
     pageFooter.classList.remove('d-none');
     topNav.classList.add('d-none');
     navTools.classList.remove('d-none');
+
+    // Pre-check the checkbox ONLY if explicitly requested via the URL
+    const checkbox = document.getElementById('hide-chat-checkbox');
+    if (checkbox) {
+        checkbox.checked = params.get('hideChat') === 'true';
+    }
 } else {
     // Apply initial visibility preference
     if (isChatHidden) {
@@ -169,7 +199,7 @@ if (channels.length === 0) {
 
         const playerDiv = document.createElement('div');
         playerDiv.id = 'player-' + channel;
-        playerDiv.className = 'video-player m-1 ' + (isActive ? 'active-stream' : '');
+        playerDiv.className = 'video-player m-1 ' + (isActive && !isChatHidden ? 'active-stream' : '');
         playerDiv.innerHTML = getStreamHtml(channel);
         videoContainer.appendChild(playerDiv);
 
@@ -194,6 +224,9 @@ if (channels.length === 0) {
 
         // Lazy load the chat iframe only when the tab is clicked
         loadChat(activeChannel);
+
+        // If chat is hidden, we should not highlight any stream
+        if (isChatHidden) return;
 
         document.querySelectorAll('.video-player').forEach(p => p.classList.remove('active-stream'));
         const activePlayer = document.getElementById('player-' + activeChannel);
@@ -283,5 +316,12 @@ function addChannelFromModal() {
 
 document.getElementById('save-channels-btn')?.addEventListener('click', () => {
     const formatted = modalChannels.join(',');
-    window.location.search = formatted ? '?channel=' + formatted : '';
+    if (!formatted) {
+        window.location.search = '';
+        return;
+    }
+    const newParams = new URLSearchParams();
+    newParams.set('channel', formatted);
+    if (isChatHidden) newParams.set('hideChat', 'true');
+    window.location.search = '?' + newParams.toString();
 });
