@@ -80,7 +80,11 @@ footer a {
     z-index: 1;
 }
 
-nav.bg-dark,
+nav.bg-dark {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: solid 2px #0e0e10;
+}
+
 footer.bg-dark {
     background-color: var(--bg-main) !important;
 }
