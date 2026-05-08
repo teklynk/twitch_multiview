@@ -103,10 +103,13 @@ footer.bg-dark {
 }
 
 .nav-tabs {
+    .nav-link {
+        font-weight: normal !important;
+    }
     .nav-link.active {
         background-color: var(--twitch-purple) !important;
         color: #fff !important;
-        font-weight: 600;
+        font-weight: normal !important;
     }
 }
 
