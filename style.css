@@ -55,6 +55,10 @@ footer a {
     color: #fff !important;
 }
 
+.nav-tabs .nav-link {
+    font-weight: 600;
+}
+
 .nav-tabs .nav-link:hover {
     border-color: var(--border-secondary) !important;
 }
