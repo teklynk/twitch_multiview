@@ -72,13 +72,14 @@ footer a {
     display: block;
     overflow: hidden;
     border-radius: .375rem;
-    z-index: 1; /* Maintain a base priority for all players */
+    z-index: 1;
+    position: relative; /* Ensure z-index is applied */
 }
 
 .active-stream {
     outline: 4px solid var(--twitch-purple) !important;
     outline-offset: -4px;
-    z-index: 2; /* Active stream sits visually higher but others don't drop to 0 */
+    z-index: 2;
 }
 
 nav.bg-dark {

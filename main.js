@@ -277,10 +277,19 @@ if (videoContainer && videoContainer.parentElement) {
 
 // Manage Channels Modal Logic
 let modalChannels = [];
+const manageModal = document.getElementById('manageModal');
 
-document.getElementById('manageModal')?.addEventListener('show.bs.modal', () => {
+manageModal?.addEventListener('show.bs.modal', () => {
     modalChannels = [...channels];
     renderManageList();
+    // Let the browser and Twitch rules take over by pausing explicitly
+    twitchPlayers.forEach(p => p && p.pause());
+});
+
+manageModal?.addEventListener('hidden.bs.modal', () => {
+    // Resume playback once the UI is returned to its normal state
+    resumeAllPlayers();
+    setTimeout(resumeAllPlayers, 500); // Insurance call after modal animation
 });
 
 function renderManageList() {
