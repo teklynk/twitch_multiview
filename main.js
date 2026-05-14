@@ -12,7 +12,7 @@ window.openTwitchLoginPopup = () => {
 };
 
 const getStreamHtml = (name) => {
-    return `<iframe id="embed_${name}" src="https://player.twitch.tv/?autoplay=true&muted=true&channel=${name}&parent=${host}" class="stream" allowfullscreen="true" width="100%" height="100%"></iframe>`;
+    return `<iframe id="embed_${name}" src="https://player.twitch.tv/?muted=true&channel=${name}&parent=${host}" class="stream" allowfullscreen="true" width="100%" height="100%"></iframe>`;
 };
 
 const getChatHtml = (name) => {
