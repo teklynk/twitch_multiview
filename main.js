@@ -5,6 +5,7 @@ const params = new URLSearchParams(window.location.search);
 const channelsParam = params.get('channel');
 const channels = channelsParam ? [...new Set(channelsParam.split(',').map(s => s.trim().toLowerCase()).filter(Boolean))] : [];
 const host = window.location.hostname;
+const twitchPlayers = new Map();
 
 window.openTwitchLoginPopup = () => {
     const popupWindow = window.open('', 'twitch-login', 'width=400,height=400');
@@ -12,7 +13,7 @@ window.openTwitchLoginPopup = () => {
 };
 
 const getStreamHtml = (name) => {
-    return `<iframe id="embed_${name}" src="https://player.twitch.tv/?muted=true&channel=${name}&parent=${host}" class="stream" allowfullscreen="true" width="100%" height="100%"></iframe>`;
+    return `<div id="twitch-embed-${name}" style="width:100%; height:100%;"></div>`;
 };
 
 const getChatHtml = (name) => {
@@ -87,8 +88,9 @@ const showChat = () => {
         const channel = activeTab.id.replace('tab-', '');
         loadChat(channel);
         // Restore purple border for the active channel
-        const player = document.getElementById('player-' + channel);
-        if (player) player.classList.add('active-stream');
+        const playerDiv = document.getElementById('player-' + channel);
+        if (playerDiv) playerDiv.classList.add('active-stream');
+        twitchPlayers.forEach(p => p && p.play());
     }
 
     // Update URL to remove hideChat
@@ -203,6 +205,17 @@ if (channels.length === 0) {
         playerDiv.innerHTML = getStreamHtml(channel);
         videoContainer.appendChild(playerDiv);
 
+        // Initialize Twitch Player API
+        const playerInstance = new Twitch.Player(`twitch-embed-${channel}`, {
+            channel: channel,
+            width: '100%',
+            height: '100%',
+            autoplay: true,
+            muted: true,
+            parent: [host]
+        });
+        twitchPlayers.set(channel, playerInstance);
+
         const tabItem = document.createElement('li');
         tabItem.className = 'nav-item';
         tabItem.innerHTML = `<button class="nav-link ${isActive ? 'active' : ''}" 
@@ -231,8 +244,24 @@ if (channels.length === 0) {
         document.querySelectorAll('.video-player').forEach(p => p.classList.remove('active-stream'));
         const activePlayer = document.getElementById('player-' + activeChannel);
         if (activePlayer) activePlayer.classList.add('active-stream');
+
+        resumeAllPlayers();
     });
 }
+
+function resumeAllPlayers() {
+    twitchPlayers.forEach(p => p && p.play());
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        resumeAllPlayers();
+        // Chromium often delays "thawing" background iframes even after the tab is visible.
+        setTimeout(resumeAllPlayers, 500);
+    }
+});
+
+window.addEventListener('focus', resumeAllPlayers);
 
 let resizeTimer;
 window.addEventListener('resize', () => {
