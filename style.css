@@ -127,8 +127,9 @@ footer.bg-dark {
 }
 
 #chat-container {
-    min-width: 340px;
-    flex-grow: 1;
+    width: 340px; /* Default width for chat when visible */
+    min-width: 340px; /* Ensures it doesn't shrink below this */
+    flex-shrink: 0; /* Prevents it from shrinking if space is tight */
     background-color: var(--bg-secondary) !important;
 }
 

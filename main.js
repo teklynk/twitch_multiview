@@ -264,13 +264,16 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('focus', resumeAllPlayers);
 
 let resizeTimer;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(window.optimizeSize, 100);
+
+// Use ResizeObserver for a pixel-perfect fit. 
+// This triggers immediately on load and whenever the layout shifts (like when chat toggles).
+const layoutObserver = new ResizeObserver(() => {
+    window.optimizeSize();
 });
 
-window.optimizeSize();
-setTimeout(window.optimizeSize, 500);
+if (videoContainer && videoContainer.parentElement) {
+    layoutObserver.observe(videoContainer.parentElement);
+}
 
 // Manage Channels Modal Logic
 let modalChannels = [];
