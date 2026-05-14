@@ -7,11 +7,6 @@ const channels = channelsParam ? [...new Set(channelsParam.split(',').map(s => s
 const host = window.location.hostname;
 const twitchPlayers = new Map();
 
-window.openTwitchLoginPopup = () => {
-    const popupWindow = window.open('', 'twitch-login', 'width=400,height=400');
-    popupWindow.location.href = 'https://www.twitch.tv/login?popup=true';
-};
-
 const getStreamHtml = (name) => {
     return `<div id="twitch-embed-${name}" style="width:100%; height:100%;"></div>`;
 };

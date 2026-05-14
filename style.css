@@ -42,7 +42,6 @@ footer a {
 
     &:hover,
     &:focus {
-        text-decoration: underline !important;
         color: var(--link-hover) !important;
     }
 }
@@ -53,10 +52,6 @@ footer a {
 
 .nav-item .nav-link {
     color: #fff !important;
-}
-
-.nav-tabs .nav-link {
-    font-weight: 600;
 }
 
 .nav-tabs .nav-link:hover {
@@ -110,12 +105,14 @@ footer.bg-dark {
 
 .nav-tabs {
     .nav-link {
-        font-weight: normal !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
     }
     .nav-link.active {
         background-color: var(--twitch-purple) !important;
         color: #fff !important;
-        font-weight: normal !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
     }
 }
 
