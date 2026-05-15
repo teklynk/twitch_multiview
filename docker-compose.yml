@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  homelab-dashboard:
+  twitch-multiviewer:
     build: .
     ports:
       - "8085:8085"

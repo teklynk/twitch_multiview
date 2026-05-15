@@ -55,3 +55,37 @@ To generate a production-ready build in the `dist/` folder:
 ```bash
 npm run build
 ```
+
+## Docker
+You can also run the dashboard using Docker.
+
+### Using Docker Compose
+Ensure you have Docker and Docker Compose installed.
+
+### Start the container:
+
+```bash
+docker-compose up -d --build
+```
+
+The dashboard will be available at `http://localhost:8085`
+
+### Manual Build
+```bash 
+docker build -t twitch-multiviewer . 
+docker run -p 8085:8085 twitch-multiviewer
+```
+
+## Troubleshooting
+
+### Where is the `dist` folder?
+When running with Docker, the `dist` folder is created **inside the container** (at `/app/dist`). You will not see it on your host machine. The application serves the files from this internal directory.
+### Using Local `dist` Directory
+The `docker-compose.yml` is configured to mount your local `dist` folder into the container. This allows you to build locally and serve the files via Docker.
+
+Start the container:
+
+```bash
+docker-compose up -d --build
+```
+*Note: If you see an empty page or errors, ensure you have run `npm run build` locally so the `dist` folder is populated.*
