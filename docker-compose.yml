@@ -4,7 +4,7 @@ services:
   twitch-multiviewer:
     build: .
     ports:
-      - "8085:8085"
+      - "8084:8084"
     restart: unless-stopped
     volumes:
       - ./dist:/app/dist

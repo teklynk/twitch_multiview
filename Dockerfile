@@ -12,6 +12,6 @@ COPY . .
 # Build the application
 RUN npm run build
 
-EXPOSE 8085
+EXPOSE 8084
 
 CMD ["npm", "run", "preview"]
