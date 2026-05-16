@@ -26,6 +26,7 @@ const topNav = document.getElementById('top-nav');
 const navTools = document.getElementById('nav-tools');
 const pageFooter = document.getElementById('page-footer');
 let isChatHidden = params.get('hideChat') === 'true';
+let isMuteToggled = params.get('toggleMute') === 'true';
 
 // Load navigation links from API
 const loadNavigation = async () => {
@@ -46,6 +47,20 @@ const loadNavigation = async () => {
     }
 };
 loadNavigation();
+
+// Update mute state for all players
+const updateMuteState = () => {
+    if (!isMuteToggled) return;
+
+    const activeTab = chatTabs.querySelector('.nav-link.active');
+    const activeChannel = activeTab ? activeTab.id.replace('tab-', '') : null;
+
+    twitchPlayers.forEach((player, channel) => {
+        if (player) {
+            player.setMuted(channel !== activeChannel);
+        }
+    });
+};
 
 // Load chat only when requested and visible
 const loadChat = (channel) => {
@@ -72,6 +87,7 @@ const hideChat = () => {
     window.history.replaceState(null, '', '?' + newParams.toString());
 
     window.optimizeSize();
+    updateMuteState();
 };
 
 const showChat = () => {
@@ -84,7 +100,7 @@ const showChat = () => {
         loadChat(channel);
         // Restore purple border for the active channel
         const playerDiv = document.getElementById('player-' + channel);
-        if (playerDiv) playerDiv.classList.add('active-stream');
+        if (playerDiv && channels.length > 1) playerDiv.classList.add('active-stream');
         twitchPlayers.forEach(p => p && p.play());
     }
 
@@ -95,6 +111,7 @@ const showChat = () => {
     window.history.replaceState(null, '', newSearch ? '?' + newSearch : window.location.pathname);
 
     window.optimizeSize();
+    updateMuteState();
 };
 
 window.toggle_chat = () => {
@@ -103,6 +120,21 @@ window.toggle_chat = () => {
     } else {
         hideChat();
     }
+};
+
+window.toggleMuteState = () => {
+    const muteCheckbox = document.getElementById('toggle-mute-checkbox');
+    isMuteToggled = muteCheckbox ? muteCheckbox.checked : false;
+
+    const newParams = new URLSearchParams(window.location.search);
+    if (isMuteToggled) {
+        newParams.set('toggleMute', 'true');
+    } else {
+        newParams.delete('toggleMute');
+    }
+    const newSearch = newParams.toString();
+    window.history.replaceState(null, '', newSearch ? '?' + newSearch : window.location.pathname);
+    updateMuteState();
 };
 
 window.optimizeSize = () => {
@@ -162,12 +194,15 @@ window.optimizeSize = () => {
 window.startViewer = () => {
     const value = channelInput.value.trim();
     const hideChatCheckbox = document.getElementById('hide-chat-checkbox');
+    const toggleMuteCheckbox = document.getElementById('toggle-mute-checkbox-setup');
     if (value) {
-        const isChecked = !!(hideChatCheckbox && hideChatCheckbox.checked);
+        const isHideChatChecked = !!(hideChatCheckbox && hideChatCheckbox.checked);
+        const isToggleMuteChecked = !!(toggleMuteCheckbox && toggleMuteCheckbox.checked);
         const formatted = [...new Set(value.split(/[\s,]+/).map(s => s.toLowerCase()).filter(Boolean))].join(',');
         
         let url = '?channel=' + formatted;
-        if (isChecked) url += '&hideChat=true';
+        if (isHideChatChecked) url += '&hideChat=true';
+        if (isToggleMuteChecked) url += '&toggleMute=true';
         window.location.search = url;
     }
 };
@@ -184,8 +219,22 @@ if (channels.length === 0) {
     if (checkbox) {
         checkbox.checked = params.get('hideChat') === 'true';
     }
+    const muteCheckbox = document.getElementById('toggle-mute-checkbox-setup');
+    if (muteCheckbox) {
+        muteCheckbox.checked = params.get('toggleMute') === 'true';
+    }
 } else {
     // Apply initial visibility preference
+    const muteCheckbox = document.getElementById('toggle-mute-checkbox');
+    if (muteCheckbox) {
+        muteCheckbox.checked = isMuteToggled;
+    }
+
+    // Hide the solo audio toggle if there's only one stream
+    if (channels.length <= 1) {
+        muteCheckbox?.closest('.nav-item')?.classList.add('d-none');
+    }
+
     if (isChatHidden) {
         chatContainer.classList.add('d-none');
     }
@@ -196,7 +245,7 @@ if (channels.length === 0) {
 
         const playerDiv = document.createElement('div');
         playerDiv.id = 'player-' + channel;
-        playerDiv.className = 'video-player m-1 ' + (isActive && !isChatHidden ? 'active-stream' : '');
+        playerDiv.className = 'video-player m-1 ' + (isActive && !isChatHidden && channels.length > 1 ? 'active-stream' : '');
         playerDiv.innerHTML = getStreamHtml(channel);
         videoContainer.appendChild(playerDiv);
 
@@ -206,10 +255,12 @@ if (channels.length === 0) {
             width: '100%',
             height: '100%',
             autoplay: true,
-            muted: true,
+            muted: true, // Start muted for reliable autoplay
             parent: [host]
         });
         twitchPlayers.set(channel, playerInstance);
+
+        playerInstance.addEventListener(Twitch.Player.PLAYING, updateMuteState);
 
         const tabItem = document.createElement('li');
         tabItem.className = 'nav-item';
@@ -226,6 +277,7 @@ if (channels.length === 0) {
         // Load the first chat immediately if it's active
         if (isActive) loadChat(channel);
     }
+    updateMuteState();
 
     chatTabs.addEventListener('shown.bs.tab', (event) => {
         const activeChannel = event.target.id.replace('tab-', '');
@@ -234,15 +286,36 @@ if (channels.length === 0) {
         loadChat(activeChannel);
 
         // If chat is hidden, we should not highlight any stream
-        if (isChatHidden) return;
+        if (isChatHidden || channels.length <= 1) return;
 
         document.querySelectorAll('.video-player').forEach(p => p.classList.remove('active-stream'));
         const activePlayer = document.getElementById('player-' + activeChannel);
         if (activePlayer) activePlayer.classList.add('active-stream');
 
+        updateMuteState();
         resumeAllPlayers();
     });
 }
+
+// Monitor for manual unmute interactions that should disable "Active Audio Only" mode.
+// We poll because the Twitch Embed API doesn't reliably fire events for internal UI interactions.
+setInterval(() => {
+    if (!isMuteToggled || twitchPlayers.size <= 1) return;
+
+    const activeTab = chatTabs.querySelector('.nav-link.active');
+    const activeChannel = activeTab ? activeTab.id.replace('tab-', '') : null;
+
+    twitchPlayers.forEach((player, channel) => {
+        // If a non-active channel is unmuted, the user has overridden the "Solo" preference.
+        if (player && channel !== activeChannel && !player.getMuted()) {
+            const muteCheckbox = document.getElementById('toggle-mute-checkbox');
+            if (muteCheckbox) {
+                muteCheckbox.checked = false;
+                window.toggleMuteState();
+            }
+        }
+    });
+}, 1000);
 
 function resumeAllPlayers() {
     twitchPlayers.forEach(p => p && p.play());
@@ -359,5 +432,6 @@ document.getElementById('save-channels-btn')?.addEventListener('click', () => {
     const newParams = new URLSearchParams();
     newParams.set('channel', formatted);
     if (isChatHidden) newParams.set('hideChat', 'true');
+    if (isMuteToggled) newParams.set('toggleMute', 'true');
     window.location.search = '?' + newParams.toString();
 });

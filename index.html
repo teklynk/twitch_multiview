@@ -41,6 +41,12 @@
         <nav class="navbar navbar-expand navbar-dark bg-dark shadow-sm p-0 px-3" id="top-nav">
             <a class="navbar-brand fw-bold" href="/">Twitch Multi-Viewer</a>
             <ul class="navbar-nav ms-auto" id="toggle-chat">
+                <li class="nav-item d-flex align-items-center me-3">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="toggle-mute-checkbox" onclick="window.toggleMuteState()">
+                        <label class="form-check-label text-white small" for="toggle-mute-checkbox" style="cursor: pointer;" title="Automatically unmute the active stream and mute all others.">Active Audio Only</label>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#manageModal">Manage</a>
                 </li>
@@ -77,10 +83,16 @@
                         <input type="text" id="channel-input" class="form-control form-control-lg border" placeholder="shroud theburntpeanut asmongold twitch" autofocus onkeydown="if(event.key==='Enter') window.startViewer()">
                         <button class="btn btn-purple px-4 text-white border" type="button" id="go-button" onclick="window.startViewer()">GO</button>
                     </div>
-                    <div class="form-check d-inline-block mb-3">
+                    <div class="form-check d-inline-block mb-3 me-3">
                         <input class="form-check-input" type="checkbox" id="hide-chat-checkbox">
                         <label class="form-check-label text-secondary" for="hide-chat-checkbox">
-                            Hide chat by default
+                            Hide chat
+                        </label>
+                    </div>
+                    <div class="form-check d-inline-block mb-3">
+                        <input class="form-check-input" type="checkbox" id="toggle-mute-checkbox-setup">
+                        <label class="form-check-label text-secondary" for="toggle-mute-checkbox-setup" title="Automatically unmute the active stream and mute all others.">
+                            Solo active audio
                         </label>
                     </div>
                 </div>
