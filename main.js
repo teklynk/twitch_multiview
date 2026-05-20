@@ -239,52 +239,64 @@ if (channels.length === 0) {
         chatContainer.classList.add('d-none');
     }
 
-    for (let i = 0; i < channels.length; i++) {
-        const channel = channels[i];
-        const isActive = (i === 0);
+    const initPlayersStaggered = async () => {
+        for (let i = 0; i < channels.length; i++) {
+            const channel = channels[i];
+            const isActive = (i === 0);
 
-        const playerDiv = document.createElement('div');
-        playerDiv.id = 'player-' + channel;
-        playerDiv.className = 'video-player m-1 ' + (isActive && !isChatHidden && channels.length > 1 ? 'active-stream' : '');
-        playerDiv.innerHTML = getStreamHtml(channel);
-        videoContainer.appendChild(playerDiv);
+            const playerDiv = document.createElement('div');
+            playerDiv.id = 'player-' + channel;
+            playerDiv.className = 'video-player m-1 ' + (isActive && !isChatHidden && channels.length > 1 ? 'active-stream' : '');
+            playerDiv.innerHTML = getStreamHtml(channel);
+            videoContainer.appendChild(playerDiv);
 
-        // Initialize Twitch Player API
-        const playerInstance = new Twitch.Player(`twitch-embed-${channel}`, {
-            channel: channel,
-            width: '100%',
-            height: '100%',
-            autoplay: true,
-            muted: true, // Start muted for reliable autoplay
-            parent: [host]
-        });
-        twitchPlayers.set(channel, playerInstance);
+            // Ensure the newly added player is sized correctly within the grid immediately
+            window.optimizeSize();
 
-        let initialQualitySet = false;
-        playerInstance.addEventListener(Twitch.Player.PLAYING, () => {
-            updateMuteState();
-            if (!initialQualitySet) {
-                playerInstance.setQuality('480p'); // Set default quality
-                initialQualitySet = true;
+            // Initialize Twitch Player API
+            const playerInstance = new Twitch.Player(`twitch-embed-${channel}`, {
+                channel: channel,
+                width: '100%',
+                height: '100%',
+                autoplay: true,
+                muted: true, // Start muted for reliable autoplay
+                parent: [host]
+            });
+            twitchPlayers.set(channel, playerInstance);
+
+            let initialQualitySet = false;
+            playerInstance.addEventListener(Twitch.Player.PLAYING, () => {
+                updateMuteState();
+                if (!initialQualitySet) {
+                    playerInstance.setQuality('480p'); // Set default quality
+                    initialQualitySet = true;
+                }
+            });
+
+            const tabItem = document.createElement('li');
+            tabItem.className = 'nav-item';
+            tabItem.innerHTML = `<button class="nav-link ${isActive ? 'active' : ''}" 
+                id="tab-${channel}" data-bs-toggle="tab" data-bs-target="#chat-pane-${channel}" 
+                type="button">${channel}</button>`;
+            chatTabs.appendChild(tabItem);
+
+            const pane = document.createElement('div');
+            pane.className = 'tab-pane' + (isActive ? ' show active' : '');
+            pane.id = 'chat-pane-' + channel;
+            chatContent.appendChild(pane);
+
+            // Load the first chat immediately if it's active
+            if (isActive) loadChat(channel);
+
+            // Wait 1 second before loading the next player to prevent network congestion
+            if (i < channels.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
-        });
+        }
+        updateMuteState();
+    };
 
-        const tabItem = document.createElement('li');
-        tabItem.className = 'nav-item';
-        tabItem.innerHTML = `<button class="nav-link ${isActive ? 'active' : ''}" 
-            id="tab-${channel}" data-bs-toggle="tab" data-bs-target="#chat-pane-${channel}" 
-            type="button">${channel}</button>`;
-        chatTabs.appendChild(tabItem);
-
-        const pane = document.createElement('div');
-        pane.className = 'tab-pane' + (isActive ? ' show active' : '');
-        pane.id = 'chat-pane-' + channel;
-        chatContent.appendChild(pane);
-
-        // Load the first chat immediately if it's active
-        if (isActive) loadChat(channel);
-    }
-    updateMuteState();
+    initPlayersStaggered();
 
     chatTabs.addEventListener('shown.bs.tab', (event) => {
         const activeChannel = event.target.id.replace('tab-', '');
