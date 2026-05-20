@@ -264,7 +264,7 @@ if (channels.length === 0) {
         playerInstance.addEventListener(Twitch.Player.PLAYING, () => {
             updateMuteState();
             if (!initialQualitySet) {
-                playerInstance.setQuality('720p');
+                playerInstance.setQuality('480p'); // Set default quality
                 initialQualitySet = true;
             }
         });
