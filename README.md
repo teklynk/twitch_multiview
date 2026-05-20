@@ -68,12 +68,12 @@ Ensure you have Docker and Docker Compose installed.
 docker-compose up -d --build
 ```
 
-The dashboard will be available at `http://localhost:8085`
+The dashboard will be available at `http://localhost:8084`
 
 ### Manual Build
 ```bash 
 docker build -t twitch-multiviewer . 
-docker run -p 8085:8085 twitch-multiviewer
+docker run -p 8084:8084 twitch-multiviewer
 ```
 
 ## Troubleshooting
