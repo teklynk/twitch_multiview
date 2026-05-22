@@ -264,13 +264,12 @@ if (channels.length === 0) {
             });
             twitchPlayers.set(channel, playerInstance);
 
-            let initialQualitySet = false;
+            playerInstance.addEventListener(Twitch.Player.READY, () => {
+                playerInstance.setQuality('480p'); // Set default quality preference as early as possible
+            });
+
             playerInstance.addEventListener(Twitch.Player.PLAYING, () => {
                 updateMuteState();
-                if (!initialQualitySet) {
-                    playerInstance.setQuality('480p'); // Set default quality
-                    initialQualitySet = true;
-                }
             });
 
             const tabItem = document.createElement('li');
