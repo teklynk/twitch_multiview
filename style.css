@@ -52,6 +52,7 @@ footer a {
 
 .nav-item .nav-link {
     color: #fff !important;
+    border-radius: 0 !important;
 }
 
 .nav-tabs .nav-link:hover {
@@ -61,7 +62,6 @@ footer a {
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
     border-color: var(--border-secondary) !important;
-    border-radius: 0 !important;
 }
 
 .nav-tabs {
