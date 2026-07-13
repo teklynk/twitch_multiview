@@ -57,6 +57,11 @@ window.popoutVideo = () => {
     const channel = getActiveChannel();
     if (!channel) return;
 
+    const activePlayer = twitchPlayers.get(channel);
+    if (activePlayer && typeof activePlayer.pause === 'function') {
+        activePlayer.pause();
+    }
+
     const url = `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${encodeURIComponent(host)}`;
     window.open(url, '_blank', 'width=1280,height=720,resizable=yes,scrollbars=yes');
 };
