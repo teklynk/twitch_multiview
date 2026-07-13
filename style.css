@@ -68,6 +68,15 @@ footer a {
     border-bottom: solid 1px var(--border-secondary) !important;
 }
 
+ul.dropdown-menu {
+    border-color: var(--border-secondary) !important;
+    min-width: 250px;
+}
+
+ul.dropdown-menu.bg-dark {
+    background-color: var(--bg-secondary) !important;
+}
+
 .video-player {
     display: block;
     overflow: hidden;

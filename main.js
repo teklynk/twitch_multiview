@@ -48,6 +48,27 @@ const loadNavigation = async () => {
 };
 loadNavigation();
 
+const getActiveChannel = () => {
+    const activeTab = chatTabs.querySelector('.nav-link.active');
+    return activeTab ? activeTab.id.replace('tab-', '') : channels[0] || null;
+};
+
+window.popoutVideo = () => {
+    const channel = getActiveChannel();
+    if (!channel) return;
+
+    const url = `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${encodeURIComponent(host)}`;
+    window.open(url, '_blank', 'width=1280,height=720,resizable=yes,scrollbars=yes');
+};
+
+window.popoutChat = () => {
+    const channel = getActiveChannel();
+    if (!channel) return;
+
+    const url = `https://www.twitch.tv/popout/${encodeURIComponent(channel)}/chat`;
+    window.open(url, '_blank', 'width=340,height=720,resizable=yes,scrollbars=yes');
+};
+
 // Update mute state for all players
 const updateMuteState = () => {
     if (!isMuteToggled) return;
@@ -230,9 +251,9 @@ if (channels.length === 0) {
         muteCheckbox.checked = isMuteToggled;
     }
 
-    // Hide the solo audio toggle if there's only one stream
     if (channels.length <= 1) {
-        muteCheckbox?.closest('.nav-item')?.classList.add('d-none');
+        const muteRow = document.getElementById('toggle-mute-row');
+        muteRow?.classList.add('d-none');
     }
 
     if (isChatHidden) {

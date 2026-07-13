@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twitch Multi-Viewer</title>
-    <meta name="description" content="A lightweight web application that allows you to watch multiple Twitch streams simultaneously in a dynamic grid layout, featuring a tabbed chat sidebar.">
-    <meta name="keywords" content="Twitch, Multi-Viewer, Multiview, Streams, Grid Layout, Chat, Tabbed Chat, Lightweight">
+    <meta name="description"
+        content="A lightweight web application that allows you to watch multiple Twitch streams simultaneously in a dynamic grid layout, featuring a tabbed chat sidebar.">
+    <meta name="keywords"
+        content="Twitch, Multi-Viewer, Multiview, Streams, Grid Layout, Chat, Tabbed Chat, Lightweight">
     <meta name="author" content="Teklynk">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Twitch Multi-Viewer">
-    <meta property="og:description" content="Watch multiple Twitch streams simultaneously in a dynamic grid layout with tabbed chat.">
+    <meta property="og:description"
+        content="Watch multiple Twitch streams simultaneously in a dynamic grid layout with tabbed chat.">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Twitch Multi-Viewer">
-    <meta name="twitter:description" content="Watch multiple Twitch streams simultaneously in a dynamic grid layout with tabbed chat.">
+    <meta name="twitter:description"
+        content="Watch multiple Twitch streams simultaneously in a dynamic grid layout with tabbed chat.">
 
     <!-- Favicons and App Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -35,22 +40,52 @@
 
     <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
     <div class="container-fluid vh-100 d-flex flex-column p-0">
         <nav class="navbar navbar-expand navbar-dark bg-dark shadow-sm p-0 px-3" id="top-nav">
             <a class="navbar-brand fw-bold" href="/">Twitch Multi-Viewer</a>
             <ul class="navbar-nav ms-auto" id="toggle-chat">
-                <li class="nav-item d-flex align-items-center me-3">
-                    <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" id="toggle-mute-checkbox" onclick="window.toggleMuteState()">
-                        <label class="form-check-label text-white small" for="toggle-mute-checkbox" style="cursor: pointer;" title="Automatically unmute the active stream and mute all others.">Active Audio Only</label>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#manageModal">Manage</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="window.toggle_chat(); return false;">Toggle Chat</a>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" id="actions-dropdown"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="me-2 fw-bold">Menu</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-dark dropdown-menu-end shadow" aria-labelledby="actions-dropdown">
+                        <li id="toggle-mute-row">
+                            <div class="dropdown-item px-3 py-2">
+                                <div class="form-check form-switch d-flex align-items-center mb-0">
+                                    <input class="form-check-input me-2" type="checkbox" id="toggle-mute-checkbox"
+                                        onclick="window.toggleMuteState()">
+                                    <label class="form-check-label text-white small mb-0" for="toggle-mute-checkbox"
+                                        style="cursor: pointer;"
+                                        title="Automatically unmute the active stream and mute all others.">
+                                        Active Audio Only
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#manageModal"
+                                data-bs-dismiss="dropdown">Manage</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="window.popoutVideo(); return false;"
+                                data-bs-dismiss="dropdown">Popout Video</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="window.popoutChat(); return false;"
+                                data-bs-dismiss="dropdown">Popout Chat</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="window.toggle_chat(); return false;"
+                                data-bs-dismiss="dropdown">Toggle Chat</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://github.com/teklynk/twitch_multiview" target="_blank"
+                                data-bs-dismiss="dropdown"><i class="fa-brands fa-github"></i>&nbsp;GitHub</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav>
@@ -67,20 +102,26 @@
                 </ul>
             </div>
             <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <div class="m-0">If you enjoy some of these tools, please consider <a href="https://www.teklynk.com/support" target="_blank" class="alert-link">donating</a>. It helps support the online infrastructure that powers these projects.</div>
+                <div class="m-0">If you enjoy some of these tools, please consider <a
+                        href="https://www.teklynk.com/support" target="_blank" class="alert-link">donating</a>. It helps
+                    support the online infrastructure that powers these projects.</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
 
         <div class="d-flex flex-row flex-grow-1 overflow-hidden justify-content-center">
             <!-- Video Streams Area -->
-            <main id="video-container" class="flex-grow-1 d-flex flex-wrap align-content-center justify-content-center overflow-hidden p-0 m-0">
+            <main id="video-container"
+                class="flex-grow-1 d-flex flex-wrap align-content-center justify-content-center overflow-hidden p-0 m-0">
                 <div id="setup-container" class="d-none text-center p-4 w-100">
                     <h1 class="display-4 mb-3">Twitch Multi-Viewer</h1>
                     <p class="lead text-secondary mb-4">Enter channel names separated by spaces or commas</p>
                     <div class="input-group mb-3 mx-auto" style="max-width: 600px;">
-                        <input type="text" id="channel-input" class="form-control form-control-lg border" placeholder="NeonVortexGaming PixelPioneerLive StaticChillStream GlitchWanderer" autofocus onkeydown="if(event.key==='Enter') window.startViewer()">
-                        <button class="btn btn-purple px-4 text-white border" type="button" id="go-button" onclick="window.startViewer()">GO</button>
+                        <input type="text" id="channel-input" class="form-control form-control-lg border"
+                            placeholder="NeonVortexGaming PixelPioneerLive StaticChillStream GlitchWanderer" autofocus
+                            onkeydown="if(event.key==='Enter') window.startViewer()">
+                        <button class="btn btn-purple px-4 text-white border" type="button" id="go-button"
+                            onclick="window.startViewer()">GO</button>
                     </div>
                 </div>
                 <!-- Videos will be injected here -->
@@ -103,19 +144,23 @@
                 <div class="modal-content bg-dark text-white">
                     <div class="modal-header">
                         <h5 class="modal-title" id="manageModalLabel">Manage Channels</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="input-group mb-3">
-                            <input type="text" id="add-channel-input" class="form-control border" placeholder="Add channel name...">
-                            <button class="btn btn-purple text-white border" type="button" id="add-channel-btn">Add</button>
+                            <input type="text" id="add-channel-input" class="form-control border"
+                                placeholder="Add channel name...">
+                            <button class="btn btn-purple text-white border" type="button"
+                                id="add-channel-btn">Add</button>
                         </div>
                         <ul id="manage-channel-list" class="list-group">
                             <!-- Channels will be injected here -->
                         </ul>
                     </div>
                     <div class="modal-footer border-secondary">
-                        <button type="button" class="btn btn-purple text-white border-radius-20" id="save-channels-btn">Save</button>
+                        <button type="button" class="btn btn-purple text-white border-radius-20"
+                            id="save-channels-btn">Save</button>
                     </div>
                 </div>
             </div>
@@ -123,11 +168,13 @@
 
         <footer class="bg-dark d-none" id="page-footer">
             <div class="container-fluid text-center py-2">
-                <small class="muted">Made with <i class="fa-solid fa-heart"></i> by <a href="https://github.com/teklynk/twitch_multiview" target="_blank">Teklynk</a></small>
+                <small class="muted">Made with <i class="fa-solid fa-heart"></i> by <a
+                        href="https://github.com/teklynk/twitch_multiview" target="_blank">Teklynk</a></small>
             </div>
         </footer>
     </div>
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <script type="module" src="/main.js"></script>
 </body>
+
 </html>
