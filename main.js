@@ -239,6 +239,13 @@ if (channels.length === 0) {
     pageFooter.classList.remove('d-none');
     topNav.classList.add('d-none');
     navTools.classList.remove('d-none');
+    // force set focus on channel-input 
+    const channelInput = document.getElementById('channel-input');
+    setTimeout(() => {
+        if (document.visibilityState === 'visible') {
+            channelInput.focus();
+        }
+    }, 250);
 
     // Pre-check the checkbox ONLY if explicitly requested via the URL
     const checkbox = document.getElementById('hide-chat-checkbox');
@@ -249,6 +256,7 @@ if (channels.length === 0) {
     if (muteCheckbox) {
         muteCheckbox.checked = params.get('toggleMute') === 'true';
     }
+
 } else {
     // Apply initial visibility preference
     const muteCheckbox = document.getElementById('toggle-mute-checkbox');
