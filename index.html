@@ -88,6 +88,11 @@
                                     class="fa-solid fa-arrow-right-arrow-left"></i>&nbsp;Toggle Chat</a>
                         </li>
                         <li>
+                            <a class="dropdown-item" href="#" onclick="window.toggle_video(); return false;"
+                                data-bs-dismiss="dropdown"><i
+                                    class="fa-solid fa-video-slash"></i>&nbsp;Toggle Video</a>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="https://github.com/teklynk/twitch_multiview" target="_blank"
                                 data-bs-dismiss="dropdown"><i class="fa-brands fa-github"></i>&nbsp;GitHub</a>
                         </li>
@@ -122,6 +127,12 @@
                             onkeydown="if(event.key==='Enter') window.startViewer()">
                         <button class="btn btn-purple px-4 text-white border" type="button" id="go-button"
                             onclick="window.startViewer()">GO</button>
+                    </div>
+                    <div class="form-check d-inline-flex">
+                        <input class="form-check-input me-2" type="checkbox" id="hide-video-checkbox">
+                        <label class="form-check-label text-secondary" for="hide-video-checkbox">
+                            Hide video player
+                        </label>
                     </div>
                     <p class="text-center m-0 mt-4 d-block">If you enjoy some of these tools, please consider <a
                             href="https://teklynktools.com/support" target="_blank">donating</a>. It

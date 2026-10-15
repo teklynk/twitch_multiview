@@ -26,6 +26,7 @@ const topNav = document.getElementById('top-nav');
 const navTools = document.getElementById('nav-tools');
 const pageFooter = document.getElementById('page-footer');
 let isChatHidden = params.get('hideChat') === 'true';
+let isVideoHidden = params.get('hideVideo') === 'true';
 let isMuteToggled = params.get('toggleMute') === 'true';
 
 // Load navigation links from API
@@ -148,6 +149,29 @@ window.toggle_chat = () => {
     }
 };
 
+const setVideoHidden = (hidden) => {
+    isVideoHidden = hidden;
+    videoContainer.classList.toggle('d-none', isVideoHidden);
+    chatContainer.style.width = isVideoHidden ? '100%' : '';
+    chatContainer.style.minWidth = isVideoHidden ? '0' : '';
+    chatContainer.style.flex = isVideoHidden ? '1 1 100%' : '';
+};
+
+window.toggle_video = () => {
+    setVideoHidden(!isVideoHidden);
+
+    const newParams = new URLSearchParams(window.location.search);
+    if (isVideoHidden) {
+        newParams.set('hideVideo', 'true');
+    } else {
+        newParams.delete('hideVideo');
+    }
+    const newSearch = newParams.toString();
+    window.history.replaceState(null, '', newSearch ? '?' + newSearch : window.location.pathname);
+
+    window.optimizeSize();
+};
+
 window.toggleMuteState = () => {
     const muteCheckbox = document.getElementById('toggle-mute-checkbox');
     isMuteToggled = muteCheckbox ? muteCheckbox.checked : false;
@@ -166,6 +190,11 @@ window.toggleMuteState = () => {
 window.optimizeSize = () => {
     const channelCount = channels.length;
     if (channelCount === 0) return;
+
+    if (isVideoHidden) {
+        setVideoHidden(true);
+        return;
+    }
 
     videoContainer.style.width = '';
     videoContainer.style.flex = '1 1 auto';
@@ -220,14 +249,17 @@ window.optimizeSize = () => {
 window.startViewer = () => {
     const value = channelInput.value.trim();
     const hideChatCheckbox = document.getElementById('hide-chat-checkbox');
+    const hideVideoCheckbox = document.getElementById('hide-video-checkbox');
     const toggleMuteCheckbox = document.getElementById('toggle-mute-checkbox-setup');
     if (value) {
         const isHideChatChecked = !!(hideChatCheckbox && hideChatCheckbox.checked);
+        const isHideVideoChecked = !!(hideVideoCheckbox && hideVideoCheckbox.checked);
         const isToggleMuteChecked = !!(toggleMuteCheckbox && toggleMuteCheckbox.checked);
         const formatted = [...new Set(value.split(/[\s,]+/).map(s => s.toLowerCase()).filter(Boolean))].join(',');
         
         let url = '?channel=' + formatted;
         if (isHideChatChecked) url += '&hideChat=true';
+        if (isHideVideoChecked) url += '&hideVideo=true';
         if (isToggleMuteChecked) url += '&toggleMute=true';
         window.location.search = url;
     }
@@ -256,8 +288,14 @@ if (channels.length === 0) {
     if (muteCheckbox) {
         muteCheckbox.checked = params.get('toggleMute') === 'true';
     }
+    const hideVideoCheckbox = document.getElementById('hide-video-checkbox');
+    if (hideVideoCheckbox) {
+        hideVideoCheckbox.checked = isVideoHidden;
+    }
 
 } else {
+    setVideoHidden(isVideoHidden);
+
     // Apply initial visibility preference
     const muteCheckbox = document.getElementById('toggle-mute-checkbox');
     if (muteCheckbox) {
@@ -484,6 +522,7 @@ document.getElementById('save-channels-btn')?.addEventListener('click', () => {
     const newParams = new URLSearchParams();
     newParams.set('channel', formatted);
     if (isChatHidden) newParams.set('hideChat', 'true');
+    if (isVideoHidden) newParams.set('hideVideo', 'true');
     if (isMuteToggled) newParams.set('toggleMute', 'true');
     window.location.search = '?' + newParams.toString();
 });
